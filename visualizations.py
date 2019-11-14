@@ -101,8 +101,21 @@ def visualization_one(target_var = None, input_vars= None, output_image_name=Non
 
 # please fully flesh out this function to meet same specifications of visualization one
 
-def visualization_two(output_image_name):
-    pass
+def box_subplots(row, col, data, xseries , columns, yticks=[]):
+    sns.set(style="white", palette="muted", color_codes=True)
+    sns.set_context("paper", font_scale=2.0)
+    f, axes = plt.subplots(row,col, figsize=(25, 20))
+    sns.despine(left=True)
+    i = 0
+    for col in range(0,3):
+        for row in range(0,4):
+            name = columns[i]
+            sns.boxplot(x=xseries,y = data[name], ax=axes[row, col])
+            ax = axes[row,col]
+            ax.tick_params(labelrotation=45)
+            i += 1     
+    plt.setp(axes, yticks=[])
+    plt.tight_layout()
 
 def visualization_three(output_image_name):
     pass
