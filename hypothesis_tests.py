@@ -12,6 +12,7 @@ from scipy import stats
 import math
 import statsmodels.api as sm
 from statsmodels.formula.api import ols
+np.random.seed(0)
 
 def create_sample_dists(cleaned_data, y_var=None, categories=[]):
     """
@@ -118,9 +119,12 @@ def anova(frame, x, y, year = None):
 def anova_loop(frame, x, y, yearlst):
     dfframe = []
     for year in yearlst:
-        data = frame[frame['year']== year]
+        data = frame[frame['year']== year].sample(500)
         test = anova(data, x, y)
         test.index = ['ANOVA of {} against {} for {}'.format(y[0].title(),x.title(), year)]
         dfframe.append(test)
     df = pd.concat(dfframe)
+    df = df.style.set_properties(**{'background-color': 'white',
+                           'color': 'black',
+                           'border-color': 'white'})
     return df
