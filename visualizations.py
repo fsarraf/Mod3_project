@@ -126,7 +126,7 @@ def sub_violinplots(x, y, group, data, ylabel, xlabel, pal="pastel"):
     ax = sns.violinplot(x=x, y=y, hue=group, data=data, 
                         split=True, scale="width", inner="quartile", font_scale = 2)
     ax.tick_params(labelrotation=45, labelsize= 15)
-    ax.set_ylabel('Energy of Songs'.format(ylabel), fontsize = 20) # Y label
+    ax.set_ylabel('{}'.format(ylabel), fontsize = 20) # Y label
     ax.set_xlabel('{}'.format(xlabel), fontsize = 20) 
     plt.setp(ax, yticks=[])
     plt.tight_layout()
