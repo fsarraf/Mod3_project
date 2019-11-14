@@ -117,6 +117,21 @@ def box_subplots(row, col, data, xseries , columns, yticks=[]):
     plt.setp(axes, yticks=[])
     plt.tight_layout()
 
+
+def sub_violinplots(x, y, group, data, ylabel, xlabel, pal="pastel"):
+    sns.set(style="white", palette= pal, color_codes=True)
+    f, ax = plt.subplots(1,1, figsize=(19, 10))
+    sns.set_context("paper", font_scale = 2)
+    sns.despine(left=True)
+    ax = sns.violinplot(x=x, y=y, hue=group, data=data, 
+                        split=True, scale="width", inner="quartile", font_scale = 2)
+    ax.tick_params(labelrotation=45, labelsize= 15)
+    ax.set_ylabel('Energy of Songs'.format(ylabel), fontsize = 20) # Y label
+    ax.set_xlabel('{}'.format(xlabel), fontsize = 20) 
+    plt.setp(ax, yticks=[])
+    plt.tight_layout()
+    
+    
 def visualization_three(output_image_name):
     pass
 
