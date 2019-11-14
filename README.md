@@ -30,5 +30,5 @@ Using the Spotify API we plan on analysing and proving the following:
         
     4.Hypothesis 3:
         i. Null: Songs are not becoming more danceable
-        ii. Alternative: Songs have become more danceable.
+        ii. Alternative: Songs in 2018 are more danceable than songs in 1999.
     
