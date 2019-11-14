@@ -10,6 +10,8 @@ import pandas as pd
 import numpy as np
 from scipy import stats
 import math
+import statsmodels.api as sm
+from statsmodels.formula.api import ols
 
 def create_sample_dists(cleaned_data, y_var=None, categories=[]):
     """
@@ -36,7 +38,7 @@ def compare_pval_alpha(p_val, alpha):
     return status
 
 
-def hypothesis_test_one(alpha = None, cleaned_data):
+def hypothesis_test_one(alpha = None, cleaned_data=None):
     """
     Describe the purpose of your hypothesis test in the docstring
     These functions should be able to test different levels of alpha for the hypothesis test.
@@ -80,3 +82,45 @@ def hypothesis_test_three():
 
 def hypothesis_test_four():
     pass
+
+
+
+def anova_table(aov):
+    aov['mean_sq'] = aov[:]['sum_sq']/aov[:]['df']
+    aov['eta_sq'] = aov[:-1]['sum_sq']/sum(aov['sum_sq'])
+    aov['omega_sq'] = (aov[:-1]['sum_sq']-(aov[:-1]['df']*aov['mean_sq'][-1]))/(sum(aov['sum_sq'])+aov['mean_sq'][-1])
+    cols = ['sum_sq', 'df', 'mean_sq', 'F', 'PR(>F)', 'eta_sq', 'omega_sq']
+    aov = aov[cols]
+    return aov
+
+def anova(frame, x, y, year = None):
+    if len(y) > 1:
+        dFrames = []
+        for i in y:
+            formula = '{} ~ C({})'.format(i,x)
+            lm = ols(formula, frame).fit()
+            table = sm.stats.anova_lm(lm, typ=2)
+            allVal = anova_table(table)
+            result = allVal.iloc[:1,:]
+            result.index = ['ANOVA of {} against {}'.format(i.title(),x.title())]
+            dFrames.append(result)
+        df = pd.concat(dFrames)
+        return df
+    else:
+        formula = '{} ~ C({})'.format(y[0],x)
+        lm = ols(formula, frame).fit()
+        table = sm.stats.anova_lm(lm, typ=2)
+        allVal = anova_table(table)
+        result = allVal.iloc[:1,:]
+        result.index = ['ANOVA of {} against {}'.format(y[0].title(),x.title())]
+        return result
+    
+def anova_loop(frame, x, y, yearlst):
+    dfframe = []
+    for year in yearlst:
+        data = frame[frame['year']== year]
+        test = anova(data, x, y)
+        test.index = ['ANOVA of {} against {} for {}'.format(y[0].title(),x.title(), year)]
+        dfframe.append(test)
+    df = pd.concat(dfframe)
+    return df
