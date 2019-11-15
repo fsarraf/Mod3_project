@@ -51,7 +51,8 @@ class go_spotify(object):
                 track_id.append(t['id'])
                 popularity.append(t['popularity'])
     
-        df_tracks = pd.DataFrame({'artist_name':artist_name,'release_date':release_date,'track_name':track_name,'track_id':track_id,'popularity':popularity})
+        df_tracks = pd.DataFrame({'artist_name':artist_name,'release_date':release_date,
+                                  'track_name':track_name,'track_id':track_id,'popularity':popularity})
         df_tracks.drop_duplicates(subset=['artist_name','track_name'], inplace=True)
         return df_tracks
     
@@ -99,11 +100,10 @@ class go_spotify(object):
         """ Takes as input a list containing all the years for which audio features of songs are required
             Returns an output containing a dataframe with songs for each year.
         """
-        
-        
         frames = []
         for year in year_list:
-            frame = self.get_features(self.songs_of_year(year), y=year)
+            tracks = self.songs_of_year(year)
+            frame = self.get_features(tracks, tracks['track_id'], y=year)
             frames.append(frame)
         df = pd.concat(frames)
         if to_csv:
