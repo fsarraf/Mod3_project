@@ -2,14 +2,10 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="3b69c4bc-1ec6-4b87-8458-97a615953e67" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/env" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/tracks_csv.csv" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/worldbank_data.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/Mod3.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/Mod3.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/api test.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/api test.ipynb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/data_cleaning.py" beforeDir="false" afterPath="$PROJECT_DIR$/data_cleaning.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/hypothesis_tests.py" beforeDir="false" afterPath="$PROJECT_DIR$/hypothesis_tests.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -65,7 +61,7 @@
       <workItem from="1573316223298" duration="786000" />
       <workItem from="1573727428536" duration="1708000" />
       <workItem from="1573731166227" duration="1071000" />
-      <workItem from="1573734284640" duration="3317000" />
+      <workItem from="1573734284640" duration="3435000" />
     </task>
     <servers />
   </component>

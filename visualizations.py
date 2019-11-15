@@ -6,6 +6,7 @@ A framework for each type of visualization is provided.
 
 import matplotlib.pyplot as plt
 import seaborn as sns
+import ptitprince as pt
 
 # Set specific parameters for the visualizations
 large = 22; med = 16; small = 12
@@ -21,7 +22,7 @@ plt.style.use('seaborn-whitegrid')
 sns.set_style("white")
 
 
-def overlapping_density(package=None, input_vars=None, target_vars=None):
+def overlapping_density(sample1, sample2):
     """
     Set the characteristics of your overlapping density plot
     All arguments are set to None purely as a filler right now
@@ -43,18 +44,16 @@ def overlapping_density(package=None, input_vars=None, target_vars=None):
     fig = plt.figure(figsize=(16, 10), dpi=80)
 
     # Starter code for figuring out which package to use
-    if package == "sns":
-        for variable in input_vars:
-            sns.kdeplot(...)
-    elif package == 'matplotlib':
-        for variable in input_vars:
-            plt.plot(..., label=None, linewidth=None, color=None, figure = fig)
+    sns.distplot(sample1, label = "2009" )
+    sns.distplot(sample2, label = 'Population')
+    plt.title('Energy of a sample of top 100 songs of 2009 in comparison to a sample of the population ')
+    plt.xlabel('Energy')
 
     return fig
 
 
 
-def boxplot_plot(package=None, input_vars=None, target_vars=None):
+def raincloud(par1, par2, df):
     """
     Same specifications and requirements as overlapping density plot
 
@@ -68,9 +67,15 @@ def boxplot_plot(package=None, input_vars=None, target_vars=None):
     :param target_vars:    the y variable of your plot, what you are comparing
     :return:               fig to be enhanced in subsequent visualization functions
     """
-    plt.figure(figsize=(16, 10), dpi=80)
+    dx = par1; dy = par2; ort = "h"; pal = "Set2"; sigma = .2
+    fig, ax = plt.subplots(figsize=(16, 10))
 
-    pass
+    pt.RainCloud(x = dx, y = dy, data = df, palette = pal, bw = sigma,
+                 width_viol = .6, ax = ax, orient = ort, move = 0)
+    plt.xlabel('Danceability')
+    plt.title('20 year Comparison of Songs Danceability')
+    
+    return fig
 
 
 def visualization_one(target_var = None, input_vars= None, output_image_name=None):

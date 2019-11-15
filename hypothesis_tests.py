@@ -12,23 +12,31 @@ from scipy import stats
 import math
 import statsmodels.api as sm
 from statsmodels.formula.api import ols
+from scipy.stats import ttest_ind
 np.random.seed(0)
+import data_cleaning as dc
+import visualizations as vz
 
-def create_sample_dists(cleaned_data, y_var=None, categories=[]):
-    """
-    Each hypothesis test will require you to create a sample distribution from your data
-    Best make a repeatable function
+def get_sample(data, n):
+    sample = []
+    while len(sample) != n:
+        x = np.random.choice(data)
+        sample.append(x)
+    
+    return sample
 
-    :param cleaned_data:
-    :param y_var: The numeric variable you are comparing
-    :param categories: the categories whose means you are comparing
-    :return: a list of sample distributions to be used in subsequent t-tests
+def get_sample_mean(sample):
+    return sum(sample) / len(sample)
 
-    """
-    htest_dfs = []
 
-    # Main chunk of code using t-tests or z-tests
-    return htest_dfs
+def create_sample_distribution(data, dist_size=1000, n=1000):
+    sample_dist = []
+    while len(sample_dist) != dist_size:
+        sample = get_sample(data, n)
+        sample_mean = get_sample_mean(sample)
+        sample_dist.append(sample_mean)
+    
+    return sample_dist
 
 def compare_pval_alpha(p_val, alpha):
     status = ''
@@ -39,7 +47,7 @@ def compare_pval_alpha(p_val, alpha):
     return status
 
 
-def hypothesis_test_one(alpha = None, cleaned_data=None):
+def hypothesis_test_one(alpha = 0.05, verbose=False):
     """
     Describe the purpose of your hypothesis test in the docstring
     These functions should be able to test different levels of alpha for the hypothesis test.
@@ -49,40 +57,75 @@ def hypothesis_test_one(alpha = None, cleaned_data=None):
     :param cleaned_data:
     :return:
     """
-    # Get data for tests
-    comparison_groups = create_sample_dists(cleaned_data=None, y_var=None, categories=[])
+    
+    tracks_df = pd.read_csv('tracks_csv.csv')
+    tracks2009=tracks_df[tracks_df['year']==2009]
 
-    ###
-    # Main chunk of code using t-tests or z-tests, effect size, power, etc
-    ###
+    sample_2009 = create_sample_distribution(tracks2009['energy'], dist_size=100, n=40)
+    sample_population = create_sample_distribution(tracks_df['energy'], dist_size=100, n=40)
+    
+    sample_2009_mean = np.mean(sample_2009)
+    sample_pop_mean = np.mean(sample_population)
+    if verbose:
+        print('Means: ')
+        print("2009 mean value:",sample_2009_mean)
+        print("Population mean value:",sample_pop_mean)
+    sample_2009_std = np.std(sample_2009)
+    sample_pop_std = np.std(sample_population)
 
-    # starter code for return statement and printed results
-    status = compare_pval_alpha(p_val, alpha)
-    assertion = ''
-    if status == 'Fail to reject':
-        assertion = 'cannot'
+    if verbose:
+        print('Standard Deviations')
+        print("2009 std value:",sample_2009_std)
+        print("pop std value:",sample_pop_std)
+    ttest,pval = ttest_ind(sample_2009,sample_population)
+    
+    if verbose:
+        print("p-value",pval)
+    
+    viz = vz.overlapping_density(sample_2009, sample_population)
+    
+    if pval < alpha:
+        status = "we reject null hypothesis"
     else:
-        assertion = "can"
-        # calculations for effect size, power, etc here as well
+        status = "we accept null hypothesis"
+        
+    if verbose:
+        print(status)
+    
+    return status, viz
 
-    print(f'Based on the p value of {p_val} and our aplha of {alpha} we {status.lower()}  the null hypothesis.'
-          f'\n Due to these results, we  {assertion} state that there is a difference between NONE')
 
-    if assertion == 'can':
-        print(f"with an effect size, cohen's d, of {str(coh_d)} and power of {power}.")
-    else:
-        print(".")
-
-    return status
-
-def hypothesis_test_two():
-    pass
-
-def hypothesis_test_three():
-    pass
 
 def hypothesis_test_four():
-    pass
+    
+    twenty_years = pd.read_csv('20 year songs.csv')
+    twenty_years['year'] = twenty_years.release_date.str[0:4]
+    tracks_1999 = twenty_years[twenty_years['year']=='1999']
+    tracks_2018 = twenty_years[twenty_years['year']=='2018']
+    
+    dist1999  =  create_sample_distribution(tracks_1999['danceability'])
+    dist2018_n1000 =  create_sample_distribution(tracks_2018['danceability'])
+    
+    x = pd.DataFrame(dist1999)
+    x['year']=1999
+    y= pd.DataFrame(dist2018_n1000)
+    y['year']=2018
+    
+    
+    
+    dof = (x[0].var()/x[0].size + y[0].var()/y[0].size)**2 / ((x[0].var()/x[0].size)**2 / (x[0].size-1) +      (y[0].var()/y[0].size)**2 / (y[0].size-1))
+   
+    t, p = stats.ttest_ind(x[0], y[0], equal_var = False)
+    print("\n",
+        f"Welch's t-test= {t:.4f}", "\n",
+        f"p-value = {p:.4f}", "\n",
+        f"Welch-Satterthwaite Degrees of Freedom= {dof:.4f}")
+    
+    dist_concat = pd.concat([x, y])
+
+    viz = vz.raincloud('year', 0, dist_concat)
+
+    return viz
 
 
 
