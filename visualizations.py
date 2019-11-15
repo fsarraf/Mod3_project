@@ -6,6 +6,9 @@ A framework for each type of visualization is provided.
 
 import matplotlib.pyplot as plt
 import seaborn as sns
+from sklearn import linear_model
+import numpy as np
+import pandas as pd
 
 # Set specific parameters for the visualizations
 large = 22; med = 16; small = 12
@@ -101,14 +104,14 @@ def visualization_one(target_var = None, input_vars= None, output_image_name=Non
 
 # please fully flesh out this function to meet same specifications of visualization one
 
-def box_subplots(row, col, data, xseries , columns, yticks=[]):
+def box_subplots(nrow, ncol, data, xseries , columns, yticks=[]):
     sns.set(style="white", palette="muted", color_codes=True)
     sns.set_context("paper", font_scale=2.0)
-    f, axes = plt.subplots(row,col, figsize=(25, 20))
+    f, axes = plt.subplots(nrow,ncol, figsize=(25, 20))
     sns.despine(left=True)
     i = 0
-    for col in range(0,3):
-        for row in range(0,4):
+    for col in range(0,ncol):
+        for row in range(0,nrow):
             name = columns[i]
             sns.boxplot(x=xseries,y = data[name], ax=axes[row, col])
             ax = axes[row,col]
@@ -130,7 +133,32 @@ def sub_violinplots(x, y, group, data, ylabel, xlabel, pal="pastel"):
     ax.set_xlabel('{}'.format(xlabel), fontsize = 20) 
     plt.setp(ax, yticks=[])
     plt.tight_layout()
-    
+
+def regplot(nrow, ncol, data, xvar, yvar, color):
+    sns.set(style="white", font_scale=1.2)
+    f, axes = plt.subplots(nrow,ncol, figsize=(14, 9.5), sharex=True)
+
+    sns.despine(left=True)
+    i = 0
+    for col in range(0,ncol):
+        for row in range(0,nrow):
+            x = data[xvar[i]]
+            y = data[yvar]
+            lr = linear_model.LinearRegression()
+            X_train = np.array(x, dtype=pd.Series).reshape(-1,1)
+            y_train = np.array(y, dtype=pd.Series)
+            lr.fit(X_train,y_train)
+            ax = axes[row,col]
+            ax.scatter(X_train,y_train,color=color[i],label="Data", alpha=.2)
+            ax.plot(X_train,lr.predict(X_train),color="red",label="Predicted Regression Line")
+            ax.set_xlabel("{} of Tracks".format(xvar[i]).title(), fontsize=15)
+            ax.set_ylabel("{} of Tracks".format(yvar).title(), fontsize=15)
+            ax.tick_params(labelrotation=45)
+            i += 1    
+            ax.legend()
+
+    plt.gca().spines['right'].set_visible(False)
+    plt.gca().spines['top'].set_visible(False)
     
 def visualization_three(output_image_name):
     pass
