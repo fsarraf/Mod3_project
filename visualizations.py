@@ -47,8 +47,8 @@ def overlapping_density(sample1, sample2):
     fig = plt.figure(figsize=(16, 10), dpi=80)
 
     # Starter code for figuring out which package to use
-    sns.distplot(sample1, label = "2009" )
-    sns.distplot(sample2, label = 'Population')
+    sns.distplot(sample1, hist= False,label = "2009" )
+    sns.distplot(sample2, hist= False, label = 'Population', )
     plt.title('Energy of a sample of top 100 songs of 2009 in comparison to a sample of the population ')
     plt.xlabel('Energy')
 
