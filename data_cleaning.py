@@ -111,7 +111,15 @@ class go_spotify(object):
         else:
             return df
 
-
+def seasons(m):
+    if (m >= 3 and m <=5):
+        return 'spring'
+    elif (m >= 6 and m <=8):
+        return 'summer'
+    elif (m >= 9 and m <=11):
+        return 'fall'
+    else:
+        return 'winter'
 
 def support_function_one(example):
     pass
