@@ -127,9 +127,19 @@ def hypothesis_test_four():
 
     return viz
 
-
+def seasons_stratifier(dataframe, sampleSize=1000):
+    data = dataframe
+    spring = data[data.seasons == 'spring'].sample(1000)
+    summer = data[data.seasons == 'summer'].sample(1000)
+    winter = data[data.seasons == 'winter'].sample(1000)
+    fall = data[data.seasons == 'fall'].sample(1000)
+    frames = [spring, summer, winter, fall]
+    df = pd.concat(frames)
+    return df
 
 def anova_table(aov):
+    ''' Takes as input the OLS Anova table and calucalte the eta queared and omega squared values and appends them to the table
+    ''' 
     aov['mean_sq'] = aov[:]['sum_sq']/aov[:]['df']
     aov['eta_sq'] = aov[:-1]['sum_sq']/sum(aov['sum_sq'])
     aov['omega_sq'] = (aov[:-1]['sum_sq']-(aov[:-1]['df']*aov['mean_sq'][-1]))/(sum(aov['sum_sq'])+aov['mean_sq'][-1])
@@ -138,6 +148,13 @@ def anova_table(aov):
     return aov
 
 def anova(frame, x, y, year = None):
+    ''' Carries out the Anova test using the stats model OLS method on one or more columns of interest
+        
+        required parameters:
+        frame: dataframe containing the data with columns of interest
+        x : column name of the dependent variable as a string
+        y : column name of the independent variable in a list
+    '''  
     if len(y) > 1:
         dFrames = []
         for i in y:
@@ -158,16 +175,35 @@ def anova(frame, x, y, year = None):
         result = allVal.iloc[:1,:]
         result.index = ['ANOVA of {} against {}'.format(y[0].title(),x.title())]
         return result
-    
-def anova_loop(frame, x, y, yearlst):
+
+def anova_loop(frame, x, y, yearcol, yearlst, compact=False):
+    ''' Carries out the Anova test using the stats model OLS method containing just one IV and DV
+        required a list of years for which the test has to be carried out.
+        
+        Parameters:
+        frame: dataframe containing the column with data of interest
+        x : column name of the dependent variable as a string eg. 'colname'
+        y : one column name of the independent variable in a list eg. ['colname']
+        yearcol: column of the dataframe containg years as values
+        yearlst: list of years for which the test has to be carried out.
+        
+    ''' 
     dfframe = []
     for year in yearlst:
-        data = frame[frame['year']== year].sample(500)
-        test = anova(data, x, y)
+        data = frame[yearcol == year]
+        testData = seasons_stratifier(data)
+        test = anova(testData, x, y)
         test.index = ['ANOVA of {} against {} for {}'.format(y[0].title(),x.title(), year)]
         dfframe.append(test)
     df = pd.concat(dfframe)
+    if compact:
+        df = df[['F', 'PR(>F)', 'eta_sq']]
+        df = df.style.set_properties(**{'background-color': 'white',
+                           'color': 'black',
+                           'border-color': 'white'})
+        return df
     df = df.style.set_properties(**{'background-color': 'white',
                            'color': 'black',
                            'border-color': 'white'})
+    
     return df

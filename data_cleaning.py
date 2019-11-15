@@ -43,6 +43,7 @@ spotify_lst = ['606FB2E4VYYs9CJSLCnhUa', '4Ur5dnjKkGgjPSJpwKBHDd',
 
 class go_spotify(object):
     """ Extract spotify song data using spotify web API.
+        Requires client id and secret key during initialization.
     """
     def __init__(self, cid, secret):
         self.cid = cid
@@ -52,6 +53,14 @@ class go_spotify(object):
         
     
     def songs_of_year(self, query, limit=50, length=10000):
+        """Extracts all songs released during a certain year. 
+           Parameters:
+           query: takes as an input year for which you want to extract songs from
+           limit (default-50): sets how many songs can extracted with one API call
+           length (default 10,000): set how many total songs needs to be extracted
+           
+           Returns a dataframe containing artist name, track name, popularity, track id and release date.
+        """
         artist_name = []
         track_name = []
         popularity = []
@@ -70,18 +79,30 @@ class go_spotify(object):
                 track_id.append(t['id'])
                 popularity.append(t['popularity'])
     
-        df_tracks = pd.DataFrame({'artist_name':artist_name,'release_date':release_date,'track_name':track_name,'track_id':track_id,'popularity':popularity})
+        df_tracks = pd.DataFrame({'artist_name':artist_name,'release_date':release_date,
+                                  'track_name':track_name,'track_id':track_id,'popularity':popularity})
         df_tracks.drop_duplicates(subset=['artist_name','track_name'], inplace=True)
         return df_tracks
     
     
-    def get_features(self, df_tracks, to_csv=False, y=None):
+    def get_features(self, df_tracks, track_id, to_csv=False, y=None):
+        ''' extract audio features of songs from spotify web api
+            Takes as input as dataframe series containing song track id and it extracts 14 audio features from spotify
+            Returns the dataframe with audio features merged into the queried dataframe.
+            
+            
+            Parameters:
+            df_tracks : dataframe containing song details
+            track_id : dataframe series containing track id of songs, assumes it is the same length as df_tracks
+            to_csv (default False): write the dataframe into a CSV file
+            
+        '''
         data = []
         limit = 100 
         noval = 0
 
-        for i in range(0,len(df_tracks['track_id']), limit):
-            batch = df_tracks['track_id'][i:i+limit]
+        for i in range(0,len(track_id), limit):
+            batch = track_id[i:i+limit]
             feature_results = self.sp.audio_features(batch)
             for i, t in enumerate(feature_results):
                 if t == None:
@@ -104,9 +125,13 @@ class go_spotify(object):
     
     
     def get_many_years(self, year_list, to_csv=False):
+        """ Takes as input a list containing all the years for which audio features of songs are required
+            Returns an output containing a dataframe with songs for each year.
+        """
         frames = []
         for year in year_list:
-            frame = self.get_features(self.songs_of_year(year), y=year)
+            tracks = self.songs_of_year(year)
+            frame = self.get_features(tracks, tracks['track_id'], y=year)
             frames.append(frame)
         df = pd.concat(frames)
         if to_csv:
@@ -225,6 +250,15 @@ def get_data(lst=spotify_lst):
     tracks_df = get_tracks(oath =oath)
     tracks_df = get_missing_tracks(df = tracks_df,oath =oath)
     return  get_track_info(df = tracks_df, oath =oath)
+def seasons(m):
+    if (m >= 3 and m <=5):
+        return 'spring'
+    elif (m >= 6 and m <=8):
+        return 'summer'
+    elif (m >= 9 and m <=11):
+        return 'fall'
+    else:
+        return 'winter'
 
 
 def support_function_two(example):
